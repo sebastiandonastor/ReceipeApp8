@@ -1,0 +1,17 @@
+
+   <a class="list-group-item list-group-item-action" routerLinkActive="active" >
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1">{{recipe.name}}</h5>
+   
+        <span>
+          <img [src]="recipe.imagePath" alt=""  class="img-fluid" style="max-height: 50px">
+        </span>
+      </div>
+      <p class="mb-1"><small>{{recipe.description}}</small>
+
+        <footer>
+          <small>{{recipe.author}}</small>
+        </footer>
+      
+    </a>
+  

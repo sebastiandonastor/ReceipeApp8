@@ -6,5 +6,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'ReceipeApp8';
+  title = 'Recetas Ricas 8';
+  page : string = 'receta';
+  OnPageChanged($data : string) {
+    this.page = $data;
+    console.log($data);
+  }
 }

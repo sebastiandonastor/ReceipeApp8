@@ -1,0 +1,43 @@
+<div class="row">  
+    <div class="col-12">
+        <img [src]="detalle.imagePath" alt="" class="img-fluid" style="height: 500px;" style="width: 500px">
+    </div>
+</div>
+
+
+<div class="row">  
+        <div class="col-12">
+            <h1>{{detalle.name}}</h1>
+        </div>
+    </div>
+
+
+    <div class="row">  
+            <div class="col-12">
+                <h4>{{detalle.description}}</h4>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-12">
+                    <div class="dropdown" dropdown-toggle>
+                            <a class="btn btn-secondary dropdown-toggle" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Acciones
+                            </a>
+                          
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                              <a class="dropdown-item" (click)="IrAIngredientes()">Ir a la lista de compra</a>
+                              <a class="dropdown-item" [routerLink]="['edit']" >Editar receta</a>
+                              <a class="dropdown-item">Borrar receta</a>
+                            </div>
+                          </div>
+            </div>
+        </div>
+
+        <div class="row">  
+                <div class="col-12">
+                    <h5>Ingredientes</h5>
+                    <p *ngFor="let ingredient of detalle.ingredients">{{ingredient.name}}</p>
+                </div>
+            </div>
