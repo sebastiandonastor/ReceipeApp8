@@ -2,23 +2,26 @@ import { Recipe } from '../models/Recipe.model';
 import { EventEmitter, Injectable } from '@angular/core';
 import { IngredientService } from '../services/ingredients.service';
 import { Ingredient } from '../models/Ingredient.model';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class recipeServices {
 
     recetaDetallosa = new EventEmitter<Recipe>();
 
+    recetaAdded = new Subject<Recipe[]>();
+
     recipes : Recipe[
-    ] = [  new Recipe('Capuchinno con amor', 
-    'El mejor capuchcino que probaras en tu vida', 
-    'http://pequenosgrandesaciertos.ufesa.es/wp-content/uploads/2016/10/como-hacer-cafe-capuchino.jpg'
-    ,'Sebastian',[new Ingredient('Leche',1)]),new Recipe('Chocolate hervido', 
-    'El mejor chocolate que probaras en tu vida', 
-    'https://img.elcomercio.pe/files/ec_article_multimedia_gallery/uploads/2018/06/20/5b2accb11085b.jpeg'
-    ,'Sebastian',[new Ingredient('Chocolate',3),new Ingredient('Crema de mani',3)])];
+    ] = [];
+
 
     constructor(private ingredientService : IngredientService){
         
+    }
+
+    setRecipes(recipesOverWrite : Recipe[]){
+        this.recipes = recipesOverWrite;
+        this.recetaAdded.next(this.recipes.slice());
     }
 
     addIngredientsToShopping(ingredientes : Ingredient []){
@@ -34,5 +37,24 @@ export class recipeServices {
 
     verDetalles(receta : Recipe){
         this.recetaDetallosa.emit(receta);
+    }
+
+    addRecipe(recipe : Recipe){
+        this.recipes.push(recipe);
+        this.recetaAdded.next(this.recipes);
+    }
+
+    updateRecipe(index : number, newRecipe: Recipe){
+        this.recipes[index] = newRecipe;
+        this.recetaAdded.next(this.recipes);
+    }
+
+    deleteRecipe(index : number) {
+        this.recipes.splice(index,1);
+        this.recetaAdded.next(this.recipes);
+    }
+
+    deleteIngredient(index : number, indexIngredient : number){
+        this.recipes[index].ingredients.splice(indexIngredient, 1);
     }
 }

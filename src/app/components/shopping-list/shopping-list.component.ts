@@ -14,11 +14,17 @@ export class ShoppingListComponent implements OnInit {
 
     constructor(private ingredientService : IngredientService){}
     ngOnInit(){
+
         this.ingredients = this.ingredientService.getIngredients();
         this.ingredientService.IngredienteAgregado.subscribe((list)=> {
             this.ingredients = list;
         });
     }
+
+    onEditIngredient(index : number) {
+        this.ingredientService.IngredientIndex.next(index);
+    }
+    
     
    
 }

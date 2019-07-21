@@ -5,8 +5,7 @@ import { recipeServices } from '../../services/recipe.service';
 
 @Component({
     selector: 'recipe-main',
-    templateUrl: './recipe.component.html',
-    providers: [recipeServices]
+    templateUrl: './recipe.component.html'
 })
 
 export class RecipeComponent implements OnInit{

@@ -29,7 +29,7 @@
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                               <a class="dropdown-item" (click)="IrAIngredientes()">Ir a la lista de compra</a>
                               <a class="dropdown-item" [routerLink]="['edit']" >Editar receta</a>
-                              <a class="dropdown-item">Borrar receta</a>
+                              <a class="dropdown-item" (click)="OnDeleteRecipe()">Borrar receta</a>
                             </div>
                           </div>
             </div>
