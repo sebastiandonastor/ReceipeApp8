@@ -8,8 +8,10 @@ import {HttpClientModule} from '@angular/common/http';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core.module';
-
-
+import { StoreModule } from '@ngrx/store';
+import * as appReducer from './store/app.reducer';
+import {EffectsModule} from '@ngrx/effects';
+import { AuthEffect } from './components/auth/store/auth.effects';
 
 @NgModule({
   declarations: [
@@ -21,6 +23,8 @@ import { CoreModule } from './core.module';
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
+    StoreModule.forRoot(appReducer.mapper),
+    EffectsModule.forRoot([AuthEffect]),
     SweetAlert2Module.forRoot({
       buttonsStyling: false,
       customClass: 'modal-content',

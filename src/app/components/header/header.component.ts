@@ -1,6 +1,9 @@
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { DataStorageService } from 'src/app/services/dataStorage.service';
 import { AuthService } from 'src/app/services/auth.service';
+import * as fromApp from '../../store/app.reducer';
+import { Store } from '@ngrx/store';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'header-app',
@@ -11,12 +14,14 @@ export class HeaderComponent implements OnInit {
 
     isAuthenticated : boolean = false;
 
-    constructor(private dataStorage : DataStorageService, private authService: AuthService){
+    constructor(private dataStorage : DataStorageService, private authService: AuthService, private store : Store<fromApp.AppState>){
 
     }
 
     ngOnInit(){
-        this.authService.userData.subscribe((user) => {
+        this.store.select('authReducer').pipe(map((data) => {
+            return data.user;
+        })).subscribe((user) => {
             this.isAuthenticated = !!user;
         })
     }

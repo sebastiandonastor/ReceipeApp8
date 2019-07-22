@@ -1,8 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import { Ingredient } from '../../../models/Ingredient.model'
-import { IngredientService } from '../../../services/ingredients.service';
 import { FormGroup, FormControl, Validators, NgForm } from '@angular/forms';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { Store } from '@ngrx/store';
+import * as ShoppingListActions from '../store/shopping-list.action';
+import * as fromShoppingListReducer from '../store/shopping-list.reducer';
 
 @Component({
     selector: 'shopping-list-edit',
@@ -15,17 +16,16 @@ export class ShoppingListEditComponent implements OnInit {
 
     editMode : boolean = false;
     editedItem : Ingredient;
-    indexItem: number;
-    constructor(private ingredientService: IngredientService){
+    constructor(private store: Store<fromShoppingListReducer.AppState>){
 
     }
-
+ 
     AgregarIngrediente(form: NgForm){
         const ingredient = new Ingredient(form.value.name, form.value.amount);
         if(this.editMode){
-            this.ingredientService.updateIngredien(this.indexItem, ingredient);
+            this.store.dispatch(new ShoppingListActions.UpdateIngredient(ingredient));
         } else {
-            this.ingredientService.addIngredient(ingredient);
+            this.store.dispatch(new ShoppingListActions.AddIngredient(ingredient));
         }
         
         this.clear();
@@ -33,22 +33,30 @@ export class ShoppingListEditComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.ingredientService.IngredientIndex.subscribe((data : number) => {
-        this.editMode = true;
-        this.editedItem = this.ingredientService.getIngredient(data);
-        this.indexItem = data;
-        this.ingredientForm.setValue({'name' : this.editedItem.name, 'amount': this.editedItem.amount});
+        this.store.select('shoppingListReducer').subscribe((data) => {
+            if(data.indexIngredient > -1){
+                this.editMode = true;
+                this.editedItem = data.editIngredient;
+                this.ingredientForm.setValue({'name' : this.editedItem.name, 'amount': this.editedItem.amount});
+            } else {
+                this.editMode = false;
+            }
+           
         });
+
+   
     }
 
     clear(){
         this.editMode = false;
         this.ingredientForm.reset();
+        this.store.dispatch(new ShoppingListActions.StopUpdate());
     }
 
     onRemoveItem(index : number){
-        this.ingredientService.deleteIngredient(index);
+        this.store.dispatch(new ShoppingListActions.RemoveIngredient());
         this.clear();
+
     }
 
  

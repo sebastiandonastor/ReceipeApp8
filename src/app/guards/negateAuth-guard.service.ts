@@ -3,16 +3,22 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Rout
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { map } from 'rxjs/operators';
+import * as fromApp from '../store/app.reducer';
+import { Store } from '@ngrx/store';
 
 @Injectable({providedIn: 'root'})
 export class NegateAuthGuard implements CanActivate {
    
-    constructor(private auth : AuthService, private router : Router){
+    constructor(private auth : AuthService, private router : Router, private store : Store<fromApp.AppState>){
 
     }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree | Observable<boolean | UrlTree>   {
-        return this.auth.userData.pipe(map((data) => {
+        return this.store.select('authReducer').pipe(
+            map((data) => {
+                return data.user;
+            }),
+            map((data) => {
             let isAuth = !data;
 
             if(isAuth){

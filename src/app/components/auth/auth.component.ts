@@ -4,7 +4,9 @@ import { AuthService } from 'src/app/services/auth.service';
 import { Observable } from 'rxjs';
 import { AuthResponse } from 'src/app/models/authResponse.model';
 import { Router } from '@angular/router';
-
+import { Store } from '@ngrx/store';
+import * as fromApp from '../../store/app.reducer';
+import * as AuthActions from './store/auth.action';
 @Component({
     selector: 'app-auth',
     templateUrl: './auth.component.html'
@@ -15,7 +17,7 @@ export class AuthComponent implements OnInit {
     authForm : FormGroup;
     errors : string = null;
 
-    constructor(private authService: AuthService, private router: Router){
+    constructor(private store : Store<fromApp.AppState>){
 
     }
 
@@ -27,6 +29,12 @@ export class AuthComponent implements OnInit {
         'email': new FormControl('', [Validators.required, Validators.email]),
         'password': new FormControl(null, [Validators.minLength(6),Validators.required])
     });
+    
+    this.store.select('authReducer').subscribe((data) => {
+        this.isLoading = data.loadingAuth;
+        this.errors = data.errorsAuth;
+
+    })
 
     }
 
@@ -41,27 +49,18 @@ export class AuthComponent implements OnInit {
     onLogin(){
         const email = this.authForm.get('email').value;
         const password = this.authForm.get('password').value;
-        this.isLoading = true;
-        let authObservable : Observable<AuthResponse>;
 
 
         if(this.isLoginMode){
-            authObservable = this.authService.login(email,password);
+            this.store.dispatch(new AuthActions.LoginStart({email, password}));
         } else {
-            authObservable = this.authService.signUp(email,password);
+            this.store.dispatch(new AuthActions.SignUpStart({email,password}));
         }
-
-        authObservable.subscribe((response) => {
-            console.log(response);
-            this.isLoading = false;
-            this.router.navigate(['/recetas']);
-        }, error => { this.errors = error; this.isLoading = false; });
-
 
         this.authForm.reset();
     }
 
     clearErrors(){
-        this.errors = null;
+        this.store.dispatch(new AuthActions.ClearErrors());
     }
 }
