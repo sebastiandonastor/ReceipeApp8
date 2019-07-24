@@ -4,7 +4,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import * as fromApp from '../../store/app.reducer';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
-
+import * as AuthActions from '../auth/store/auth.action';
 @Component({
     selector: 'header-app',
     templateUrl: './header.component.html',
@@ -14,7 +14,7 @@ export class HeaderComponent implements OnInit {
 
     isAuthenticated : boolean = false;
 
-    constructor(private dataStorage : DataStorageService, private authService: AuthService, private store : Store<fromApp.AppState>){
+    constructor(private dataStorage : DataStorageService, private store : Store<fromApp.AppState>){
 
     }
 
@@ -35,7 +35,7 @@ export class HeaderComponent implements OnInit {
     }
 
     logout(){
-        this.authService.logout();
+        this.store.dispatch(new AuthActions.Logout());
     }
 
 

@@ -6,6 +6,8 @@ import { AuthResponse } from 'src/app/models/authResponse.model';
 import { of } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { User } from 'src/app/models/user.model';
+import { AuthService } from 'src/app/services/auth.service';
 
 const handleError = (errorResponse) => {
     let errorMessage = "Unknow Error";
@@ -31,10 +33,21 @@ const handleError = (errorResponse) => {
 
     return of(new AuthActions.LoginFail(errorMessage));
 }
+
+const handlerAUth = (data : AuthResponse) => {
+    let expDate = new Date(new Date().getTime() +  (+data.expiresIn * 1000));
+
+    const user = new User(data.email, data.localId, data.idToken, expDate);
+    localStorage.setItem('userData', JSON.stringify(user));
+   
+    return new AuthActions.Login({email : data.email,
+        localId: data.localId, token: data.idToken, expDate: new Date(expDate)});
+}
 @Injectable()
 export class AuthEffect {
 
-    constructor(private action$ : Actions, private http : HttpClient, private router : Router) {
+    constructor(private action$ : Actions, private http : HttpClient, private router : Router, 
+        private authService : AuthService) {
 
     }
 
@@ -46,9 +59,10 @@ export class AuthEffect {
                 email: data.payload.email,
                 password: data.payload.password,
                 returnSecureToken: true
-            }).pipe(map((data => {
-                return new AuthActions.Login({email : data.email,
-                    localId: data.localId, token: data.idToken, expDate: new Date(data.expiresIn)});
+            }).pipe(tap((data) => {
+                this.authService.autoLogout(+data.expiresIn * 1000);
+            }),map((data => {
+                return handlerAUth(data);
             })),
             catchError((errorResponse) => {
                 return handleError(errorResponse);
@@ -63,17 +77,51 @@ export class AuthEffect {
             email: data.payload.email,
             password: data.payload.password,
             returnSecureToken: true
-        }).pipe(map((data => {
-            return new AuthActions.Login({email : data.email,
-                localId: data.localId, token: data.idToken, expDate: new Date(data.expiresIn)});
+        }).pipe(tap((data) => {
+            this.authService.autoLogout(+data.expiresIn * 1000);
+        }),map((data => {
+            return handlerAUth(data);
         })),
         catchError((errorResponse) => {
             return handleError(errorResponse);
         }))
 
-
         })
     )
+
+    @Effect({dispatch : false})
+    logout = this.action$.pipe(ofType(AuthActions.LOGOUT) ,tap(() => {
+        localStorage.removeItem('userData');
+        this.authService.clearLogout();
+        this.router.navigate(['/auth']);
+    }));   
+
+    @Effect()
+    auto_login = this.action$.pipe(ofType(AuthActions.AUTO_LOGIN),
+    map(() => {
+        let userInfo : {
+            email: string,
+            id: string,
+            _token: string,
+            expDateToken: string
+        } = JSON.parse(localStorage.getItem('userData'));
+
+
+        if(!userInfo){
+            return {type : 'DUMMY TYPE'};
+        }
+
+        let user = new User(userInfo.email, userInfo.id, userInfo._token, new Date(userInfo.expDateToken));
+        
+        if(user.token){
+            let remainingTime : number = new Date(userInfo.expDateToken).getTime() - new Date().getTime();
+            console.log(remainingTime);
+            this.authService.autoLogout(remainingTime);
+            return new AuthActions.Login({email: user.email, token: user.token, localId : user.id, expDate: new Date(userInfo.expDateToken)});
+        }
+
+        return {type : 'DUMMY TYPE'};
+    }));
 
 
     @Effect({dispatch: false})

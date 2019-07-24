@@ -16,9 +16,9 @@ export interface State {
 
 export function AuthReducer(state = authState, actions : AuthActions.AuthActions) {
     switch(actions.type) {
+
         case AuthActions.LOGIN :
         const user = new User(actions.payload.email, actions.payload.localId, actions.payload.token, actions.payload.expDate);
-        console.log(user);
         return {...state, user, loadingAuth: false};
         break;
 

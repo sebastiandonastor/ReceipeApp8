@@ -12,7 +12,9 @@ import { StoreModule } from '@ngrx/store';
 import * as appReducer from './store/app.reducer';
 import {EffectsModule} from '@ngrx/effects';
 import { AuthEffect } from './components/auth/store/auth.effects';
-
+import {StoreDevtoolsModule} from '@ngrx/store-devtools'
+import { environment } from 'src/environments/environment';
+import {StoreRouterConnectingModule} from '@ngrx/router-store';
 @NgModule({
   declarations: [
     AppComponent,
@@ -25,6 +27,8 @@ import { AuthEffect } from './components/auth/store/auth.effects';
     HttpClientModule,
     StoreModule.forRoot(appReducer.mapper),
     EffectsModule.forRoot([AuthEffect]),
+    StoreDevtoolsModule.instrument({logOnly: environment.production}),
+    StoreRouterConnectingModule.forRoot(),
     SweetAlert2Module.forRoot({
       buttonsStyling: false,
       customClass: 'modal-content',
