@@ -15,6 +15,7 @@ import { AuthEffect } from './components/auth/store/auth.effects';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools'
 import { environment } from 'src/environments/environment';
 import {StoreRouterConnectingModule} from '@ngrx/router-store';
+import {RecipeEffects} from './components/recipe-book/store/recipe-effects';
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,7 +27,7 @@ import {StoreRouterConnectingModule} from '@ngrx/router-store';
     ReactiveFormsModule,
     HttpClientModule,
     StoreModule.forRoot(appReducer.mapper),
-    EffectsModule.forRoot([AuthEffect]),
+    EffectsModule.forRoot([AuthEffect,RecipeEffects]),
     StoreDevtoolsModule.instrument({logOnly: environment.production}),
     StoreRouterConnectingModule.forRoot(),
     SweetAlert2Module.forRoot({

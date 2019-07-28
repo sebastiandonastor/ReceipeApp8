@@ -41,7 +41,7 @@ const handlerAUth = (data : AuthResponse) => {
     localStorage.setItem('userData', JSON.stringify(user));
    
     return new AuthActions.Login({email : data.email,
-        localId: data.localId, token: data.idToken, expDate: new Date(expDate)});
+        localId: data.localId, token: data.idToken, expDate: new Date(expDate), redirect: true});
 }
 @Injectable()
 export class AuthEffect {
@@ -117,7 +117,8 @@ export class AuthEffect {
             let remainingTime : number = new Date(userInfo.expDateToken).getTime() - new Date().getTime();
             console.log(remainingTime);
             this.authService.autoLogout(remainingTime);
-            return new AuthActions.Login({email: user.email, token: user.token, localId : user.id, expDate: new Date(userInfo.expDateToken)});
+            return new AuthActions.Login
+            ({email: user.email, token: user.token, localId : user.id, expDate: new Date(userInfo.expDateToken), redirect: false});
         }
 
         return {type : 'DUMMY TYPE'};
@@ -127,8 +128,10 @@ export class AuthEffect {
     @Effect({dispatch: false})
     loginSuccess = this.action$
     .pipe(ofType(AuthActions.LOGIN), 
-    tap(() => {
-        this.router.navigate(['/']);    
+    tap((authSuccess : AuthActions.Login) => {
+        if(authSuccess.payload.redirect){
+            this.router.navigate(['/']); 
+        }
     }))
     
     

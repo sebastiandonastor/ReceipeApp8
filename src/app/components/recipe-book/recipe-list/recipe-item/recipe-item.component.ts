@@ -12,12 +12,9 @@ export class RecipeItemComponent {
     @Input() recipe : Recipe;
 
 
-    constructor(private recipeService : recipeServices) {
+    constructor() {
+   
+    }
 
-    }
-    VerDetalles(){
-        this.recipeService.verDetalles(this.recipe);
-        console.log('emitido en recipe-item');
-    }
 
 }

@@ -16,25 +16,7 @@ export class DataStorageService {
     }
 
 
-    storeData(){
-        const recipe = this.recipeService.getRecetas();
-        this.http.put('https://recipedelicius.firebaseio.com/recipes.json', recipe).subscribe((data) => {
-            console.log(data);
-        });
-    }
+ 
 
-    getRecipes(){
-        return this.http.get<Recipe[]>('https://recipedelicius.firebaseio.com/recipes.json')
-        .pipe(
-            map((data) => {
-            return data.map((element) => {
-                if(!element.ingredients){
-                    element.ingredients = [];
-                }
-                return element;
-            })
-        }), tap((data : Recipe[]) => {
-            this.store.dispatch(new recipeActions.SetRecipe(data));
-        }));
-    }
+
 }
